@@ -132,10 +132,14 @@ const server = new McpServer(
 4. Pick emojis by their VISUAL appearance in the sprite sheet — unicode fallbacks are often inaccurate
 5. send_message → send with <tg-emoji> HTML tags
 
+## Tips
+- You can mix emojis from different synced packs in one message
+- Sync multiple packs to have a wider selection, then pick the best-looking ones across all packs
+
 ## Style rules for posts
 - Use 1 custom emoji per section header — don't spam every line
 - Keep it clean: emoji before bold title, plain text for content
-- Pick emojis that match the section meaning (e.g. 🔥 for hot news, 💬 for chat features)
+- Pick emojis that match the section meaning visually, not by unicode fallback
 - Max 5-8 custom emojis per post, not more`,
   },
 );
