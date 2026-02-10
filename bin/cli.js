@@ -1,10 +1,15 @@
 #!/usr/bin/env node
-import { execFileSync } from "child_process";
-import { dirname, join } from "path";
-import { fileURLToPath } from "url";
+import { execFileSync } from "node:child_process";
+import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
+import { createRequire } from "node:module";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const tsx = join(__dirname, "..", "node_modules", ".bin", "tsx");
+const require = createRequire(join(__dirname, "..", "package.json"));
+const tsxEsm = require.resolve("tsx/esm");
 const entry = join(__dirname, "..", "src", "index.ts");
 
-execFileSync(tsx, [entry], { stdio: "inherit", env: process.env });
+execFileSync(process.execPath, ["--import", tsxEsm, entry], {
+  stdio: "inherit",
+  env: process.env,
+});

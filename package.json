@@ -1,6 +1,6 @@
 {
   "name": "mcp-telegram-emoji",
-  "version": "1.0.3",
+  "version": "1.0.5",
   "description": "MCP server for Telegram custom emoji — search, preview sprites, send messages",
   "type": "module",
   "bin": {
