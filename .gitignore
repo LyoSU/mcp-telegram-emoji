@@ -1,0 +1,4 @@
+node_modules/
+dist/
+data/emoji-cache.json
+data/previews/
