@@ -99,20 +99,13 @@ async function syncViaTelegram(name: string): Promise<{ emojis: CachedEmoji[]; t
     thumbnail_file_id: s.thumbnail?.file_id,
   }));
 
-  // Download all thumbnails in parallel (batches of 20)
-  const BATCH = 20;
-  const thumbs: Buffer[] = new Array(set.stickers.length).fill(Buffer.alloc(0));
-  for (let i = 0; i < set.stickers.length; i += BATCH) {
-    const batch = set.stickers.slice(i, i + BATCH);
-    const results = await Promise.allSettled(
-      batch.map((s) =>
-        s.thumbnail ? downloadFile(TOKEN!, s.thumbnail.file_id) : Promise.resolve(Buffer.alloc(0)),
-      ),
-    );
-    results.forEach((r, j) => {
-      thumbs[i + j] = r.status === "fulfilled" ? r.value : Buffer.alloc(0);
-    });
-  }
+  // Download all thumbnails in parallel (no rate limits on Telegram file API)
+  const results = await Promise.allSettled(
+    set.stickers.map((s) =>
+      s.thumbnail ? downloadFile(TOKEN!, s.thumbnail.file_id) : Promise.resolve(Buffer.alloc(0)),
+    ),
+  );
+  const thumbs = results.map((r) => (r.status === "fulfilled" ? r.value : Buffer.alloc(0)));
 
   return { emojis, thumbs, title: set.title };
 }

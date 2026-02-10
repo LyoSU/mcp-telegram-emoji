@@ -1,18 +1,40 @@
 {
   "name": "mcp-telegram-emoji",
   "version": "1.0.0",
-  "private": true,
+  "description": "MCP server for Telegram custom emoji — search, preview sprites, send messages",
   "type": "module",
+  "bin": {
+    "mcp-telegram-emoji": "bin/cli.js"
+  },
+  "files": [
+    "src",
+    "bin",
+    "tsconfig.json"
+  ],
   "scripts": {
     "start": "tsx src/index.ts"
   },
+  "keywords": [
+    "mcp",
+    "telegram",
+    "emoji",
+    "custom-emoji",
+    "claude",
+    "stickers"
+  ],
+  "author": "LyoSU",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LyoSU/mcp-telegram-emoji"
+  },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.12.1",
-    "sharp": "^0.33.5"
+    "sharp": "^0.33.5",
+    "tsx": "^4.19.0"
   },
   "devDependencies": {
     "@types/node": "^25.2.2",
-    "tsx": "^4.19.0",
     "typescript": "^5.7.0"
   }
 }

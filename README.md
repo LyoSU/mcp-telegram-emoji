@@ -7,17 +7,17 @@ Search packs on fstik.app, sync them via Bot API, preview as sprite sheets, and 
 ## Setup
 
 ```bash
-npm install
+claude mcp add telegram-emoji -s user -- npx -y mcp-telegram-emoji
 ```
 
-Add to `~/.claude.json`:
+Or manually in `~/.claude.json`:
 
 ```json
 {
   "telegram-emoji": {
     "type": "stdio",
-    "command": "./node_modules/.bin/tsx",
-    "args": ["./src/index.ts"],
+    "command": "npx",
+    "args": ["-y", "mcp-telegram-emoji"],
     "env": {
       "TELEGRAM_BOT_TOKEN": "...",
       "EMOJI_PACKS": "NewsEmoji,CenterOfEmoji98095669"
