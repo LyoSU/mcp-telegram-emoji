@@ -12,7 +12,12 @@ export class Cache {
 
   constructor(private filePath: string) {
     if (existsSync(filePath)) {
-      this.data = JSON.parse(readFileSync(filePath, "utf-8"));
+      try {
+        this.data = JSON.parse(readFileSync(filePath, "utf-8"));
+      } catch {
+        console.error("Cache file corrupted, resetting");
+        this.data = { packs: {} };
+      }
     } else {
       this.data = { packs: {} };
     }
@@ -42,8 +47,8 @@ export class Cache {
   }
 
   searchEmoji(query: string) {
-    if (!query || query.trim().length === 0) return [];
-    const q = stripVariationSelectors(query.toLowerCase().trim());
+    const q = stripVariationSelectors((query ?? "").toLowerCase().trim());
+    if (q.length === 0) return [];
     const results: { custom_emoji_id: string; emoji: string; set_name: string }[] = [];
     for (const pack of Object.values(this.data.packs)) {
       for (const e of pack.emojis) {

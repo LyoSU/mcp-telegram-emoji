@@ -28,18 +28,26 @@ export async function searchStickerSets(
   limit = 10,
   skip = 0,
 ): Promise<FstikStickerSet[]> {
-  const res = await fetch("https://api.fstik.app/searchStickerSet", {
-    method: "POST",
-    headers: HEADERS,
-    body: JSON.stringify({
-      query,
-      limit,
-      skip,
-      type: "",
-      user_token: null,
-      kind: "custom_emoji",
-    }),
-  });
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 30_000);
+  let res: Response;
+  try {
+    res = await fetch("https://api.fstik.app/searchStickerSet", {
+      method: "POST",
+      headers: HEADERS,
+      body: JSON.stringify({
+        query,
+        limit,
+        skip,
+        type: "",
+        user_token: null,
+        kind: "custom_emoji",
+      }),
+      signal: controller.signal,
+    });
+  } finally {
+    clearTimeout(timer);
+  }
   const data = (await res.json()) as FstikSearchResult;
   if (!data.ok) throw new Error("fstik API error");
   return data.result.stickerSets;

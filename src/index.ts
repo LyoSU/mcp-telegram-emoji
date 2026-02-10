@@ -99,13 +99,18 @@ async function syncViaTelegram(name: string): Promise<{ emojis: CachedEmoji[]; t
     thumbnail_file_id: s.thumbnail?.file_id,
   }));
 
-  // Download all thumbnails in parallel (no rate limits on Telegram file API)
-  const results = await Promise.allSettled(
-    set.stickers.map((s) =>
-      s.thumbnail ? downloadFile(TOKEN!, s.thumbnail.file_id) : Promise.resolve(Buffer.alloc(0)),
-    ),
-  );
-  const thumbs = results.map((r) => (r.status === "fulfilled" ? r.value : Buffer.alloc(0)));
+  // Download thumbnails in parallel batches of 50
+  const BATCH = 50;
+  const thumbs: Buffer[] = [];
+  for (let i = 0; i < set.stickers.length; i += BATCH) {
+    const batch = set.stickers.slice(i, i + BATCH);
+    const results = await Promise.allSettled(
+      batch.map((s) =>
+        s.thumbnail ? downloadFile(TOKEN!, s.thumbnail.file_id) : Promise.resolve(Buffer.alloc(0)),
+      ),
+    );
+    thumbs.push(...results.map((r) => (r.status === "fulfilled" ? r.value : Buffer.alloc(0))));
+  }
 
   return { emojis, thumbs, title: set.title };
 }
@@ -214,9 +219,9 @@ IMPORTANT: Always look at the preview image to see what each emoji actually look
     }
 
     const lines = pack.emojis.map(
-      (e, i) => `#${i + 1}  ${e.emoji}  id:${e.custom_emoji_id}`,
+      (e, i) => `#${i + 1}  id:${e.custom_emoji_id}  fallback:${e.emoji}`,
     );
-    const text = `${pack.title} (${pack.emojis.length} emojis)\n\n${lines.join("\n")}`;
+    const text = `${pack.title} (${pack.emojis.length} emojis)\n⚠️ IMPORTANT: The sprite sheet below shows the REAL appearance. Unicode fallbacks are often inaccurate — always pick emojis by their visual look in the sprite, not by fallback.\n\n${lines.join("\n")}`;
 
     const content: Array<{ type: "text"; text: string } | { type: "image"; data: string; mimeType: string }> = [
       { type: "text", text },
@@ -243,7 +248,7 @@ server.tool(
       return { content: [{ type: "text", text: `No emojis found for "${query}"` }] };
     }
     const lines = results.map(
-      (e) => `${e.emoji}  id:${e.custom_emoji_id}  pack:${e.set_name}`,
+      (e) => `id:${e.custom_emoji_id}  fallback:${e.emoji}  pack:${e.set_name}`,
     );
     return { content: [{ type: "text", text: lines.join("\n") }] };
   },
@@ -279,7 +284,7 @@ server.tool(
     }
 
     const content: Array<{ type: "text"; text: string } | { type: "image"; data: string; mimeType: string }> = [
-      { type: "text", text: `#${idx + 1}  ${emoji.emoji}  id: ${emoji.custom_emoji_id}\npack: ${emoji.set_name}` },
+      { type: "text", text: `#${idx + 1}  id: ${emoji.custom_emoji_id}  fallback: ${emoji.emoji}\npack: ${emoji.set_name}` },
     ];
 
     // Download thumbnail using cached file_id (no need to re-fetch entire sticker set)
