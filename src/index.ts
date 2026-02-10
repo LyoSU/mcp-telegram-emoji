@@ -129,7 +129,7 @@ const server = new McpServer(
 1. search_packs → find packs by keyword on fstik.app
 2. sync_emoji_pack → download pack via Telegram Bot API (gets real custom_emoji_id + thumbnails)
 3. get_pack → ALWAYS look at the sprite sheet preview to see what emojis actually look like
-4. Pick emojis visually from the sprite sheet, NEVER guess by unicode fallback
+4. Pick emojis by their VISUAL appearance in the sprite sheet — unicode fallbacks are often inaccurate
 5. send_message → send with <tg-emoji> HTML tags
 
 ## Style rules for posts
@@ -221,7 +221,7 @@ IMPORTANT: Always look at the preview image to see what each emoji actually look
     const lines = pack.emojis.map(
       (e, i) => `#${i + 1}  id:${e.custom_emoji_id}  fallback:${e.emoji}`,
     );
-    const text = `${pack.title} (${pack.emojis.length} emojis)\n⚠️ IMPORTANT: The sprite sheet below shows the REAL appearance. Unicode fallbacks are often inaccurate — always pick emojis by their visual look in the sprite, not by fallback.\n\n${lines.join("\n")}`;
+    const text = `${pack.title} (${pack.emojis.length} emojis)\n\n${lines.join("\n")}`;
 
     const content: Array<{ type: "text"; text: string } | { type: "image"; data: string; mimeType: string }> = [
       { type: "text", text },
